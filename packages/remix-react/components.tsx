@@ -399,7 +399,7 @@ interface PrefetchHandlers {
 function usePrefetchBehavior(
   prefetch: PrefetchBehavior,
   theirElementProps: PrefetchHandlers
-) {
+): [boolean, Required<PrefetchHandlers>] {
   let [maybePrefetch, setMaybePrefetch] = React.useState(false);
   let [shouldPrefetch, setShouldPrefetch] = React.useState(false);
   let { onFocus, onBlur, onMouseEnter, onMouseLeave, onTouchStart } =
@@ -1491,7 +1491,7 @@ export const LiveReload =
             suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: js`
-                (() => {
+                function remixLiveReloadConnect(config) {
                   let protocol = location.protocol === "https:" ? "wss:" : "ws:";
                   let host = location.hostname;
                   let socketPath = protocol + "//" + host + ":" + ${String(
@@ -1509,11 +1509,27 @@ export const LiveReload =
                       window.location.reload();
                     }
                   };
+                  ws.onopen = () => {
+                    if (config && typeof config.onOpen === "function") {
+                      config.onOpen();
+                    }
+                  };
+                  ws.onclose = (error) => {
+                    console.log("Remix dev asset server web socket closed. Reconnecting...");
+                    setTimeout(
+                      () =>
+                        remixLiveReloadConnect({
+                          onOpen: () => window.location.reload(),
+                        }),
+                      1000
+                    );
+                  };
                   ws.onerror = (error) => {
                     console.log("Remix dev asset server web socket error:");
                     console.error(error);
                   };
-                })();
+                }
+                remixLiveReloadConnect();
               `,
             }}
           />
