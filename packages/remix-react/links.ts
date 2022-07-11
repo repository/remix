@@ -245,7 +245,7 @@ export async function prefetchStyleLinks(
   routeModule: RouteModule
 ): Promise<void> {
   if (!routeModule.links) return;
-  let descriptors = routeModule.links();
+  let descriptors = routeModule.links({});
   if (!descriptors) return;
 
   let styleLinks: HtmlLinkDescriptor[] = [];
@@ -331,7 +331,7 @@ export async function getStylesheetPrefetchLinks(
   let links = await Promise.all(
     matches.map(async (match) => {
       let mod = await loadRouteModule(match.route, routeModules);
-      return mod.links ? mod.links() : [];
+      return mod.links ? mod.links({}) : [];
     })
   );
 
