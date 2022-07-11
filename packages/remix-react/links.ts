@@ -227,12 +227,13 @@ export type LinkDescriptor = HtmlLinkDescriptor | PrefetchPageDescriptor;
 export function getLinksForMatches(
   matches: RouteMatch<ClientRoute>[],
   routeModules: RouteModules,
-  manifest: AssetsManifest
+  manifest: AssetsManifest,
+  error: Error | undefined
 ): LinkDescriptor[] {
   let descriptors = matches
     .map((match): LinkDescriptor[] => {
       let module = routeModules[match.route.id];
-      return module.links?.() || [];
+      return module.links?.({ error }) || [];
     })
     .flat(1);
 

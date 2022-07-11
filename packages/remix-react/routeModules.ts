@@ -45,7 +45,7 @@ export type ErrorBoundaryComponent = ComponentType<{ error: Error }>;
  * @see https://remix.run/api/remix#meta-links-scripts
  */
 export interface LinksFunction {
-  (): LinkDescriptor[];
+  (args: { error: Error | undefined }): LinkDescriptor[];
 }
 
 /**
@@ -61,6 +61,7 @@ export interface MetaFunction {
     parentsData: RouteData;
     params: Params;
     location: Location;
+    error: Error | undefined;
   }): HtmlMetaDescriptor | undefined;
 }
 
