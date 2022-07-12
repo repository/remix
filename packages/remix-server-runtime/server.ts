@@ -291,11 +291,8 @@ async function handleDocumentRequest({
   }
 
   let loaderRequest = new Request(request.url, {
+    ...request,
     body: null,
-    headers: request.headers,
-    method: request.method,
-    redirect: request.redirect,
-    signal: request.signal,
   });
 
   let routeLoaderResults = await Promise.allSettled(
